@@ -1,0 +1,268 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Cinema Classic | Movie</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords"/>
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+<!-- start plugins -->
+<script type="text/javascript" src="js/dropdown.js"></script>
+<script type="text/javascript" src="js/bootstrap.bundle.min.js?v=502"></script>
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:100,200,300,400,500,600,700,800,900' rel='stylesheet' type='text/css'>
+<script type="text/javascript">
+	window.onload = function() {
+		var url = window.location;
+		if(!String(url).includes('?date='))
+		{
+			url = url + '?date=' + encodeURIComponent('All Dates') + '&genre=' + encodeURIComponent('All Genres');
+      		window.location.replace(url);
+		}
+		else
+		{
+			var substr1 = String(url).substring(String(url).indexOf('&genre='), String(url).indexOf('?date=')+6);
+			$("#dropdownMenuButton1").text(decodeURIComponent(substr1));
+			var substr2 = String(url).substring(String(url).length, String(url).indexOf('&genre=')+7);
+			$("#dropdownMenuButton2").text(decodeURIComponent(substr2));
+
+			$.ajax({
+                type: "POST",
+                url: "listingfilms.php",
+                data: { data1: decodeURIComponent(substr1), data2: decodeURIComponent(substr2) },
+               	success: function(response){ // запустится после получения результатов
+               		var mas = jQuery.parseJSON(response);
+           			console.log("Finish :\n", mas);
+
+           			//Fill Date list (DropDown)
+           			var main = document.getElementById("date_list_ul");
+           			main.innerHTML = "";
+           			var str = '<li><button class="dropdownbutton" value="All Dates" onclick="date_set(this.value)">All Dates</button></li>';
+           			mas[0].forEach(v => {
+					  str += '<li><button class="dropdownbutton" value="' + v + '" onclick="date_set(this.value)">' + v + '</button></li>';
+					});
+      				main.innerHTML += str;
+
+
+      				//Fill Genre list (DropDown)
+      				main = document.getElementById("genre_list_ul");
+           			main.innerHTML = "";
+           			str = '<li><button class="dropdownbutton" value="All Genres" onclick="genre_set(this.value)">All Genres</button></li>';
+           			mas[1].forEach(v => {
+					  str += '<li><button class="dropdownbutton" value="' + v + '" onclick="genre_set(this.value)">' + v + '</button></li>';
+					});
+      				main.innerHTML += str;
+
+      				//Заполнение страницу блоками с фильмами
+      				main = document.getElementById("cnt");
+      				str = "";
+      				mas[4].forEach(v => {
+	      				str += v;
+	      			});
+	      			main.innerHTML += str;
+              	},
+              	error: function(e) { console.log("ERROR :\n", e);  }
+            });
+		}
+  	};
+
+	function date_set(val){
+	  var url = window.location;
+	  var substr = String(url).substring(String(url).indexOf('&genre='), String(url).indexOf('?date=')+6);
+	  url = String(url).replace(substr, encodeURIComponent(val));
+
+	  substr = String(url).substring(String(url).length, String(url).indexOf('&genre=')+7);
+	  url = String(url).replace(substr, encodeURIComponent('All Genres'));
+
+	  window.location.replace(url);
+	}
+	function genre_set(val){
+	  var url = window.location;
+	  var substr = String(url).substring(String(url).length, String(url).indexOf('&genre=')+7);
+	  url = String(url).replace(substr, encodeURIComponent(val));
+	  window.location.replace(url);
+	}
+</script>
+</head>
+<body>
+<div class="container">
+	<div class="container_wrap">
+		<div class="header_top">
+		    <div class="col-sm-3 logo"><a href="index.html"><img src="images/logo.png" alt=""/></a></div>
+		    <div class="col-sm-6 nav">
+			  <ul id="nav_bar">
+				 <!-- <li> <span class="simptip-position-bottom simptip-movable" data-tooltip="comic"><a href="movie.html"> </a></span></li> -->
+				 <li><span class="simptip-position-bottom simptip-movable" data-tooltip="movie"><a href="movie.html"> </a> </span></li>
+				 <li><span class="simptip-position-bottom simptip-movable" data-tooltip="main"><a href="index.html"> </a></span></li>
+				 <!-- <li><span class="simptip-position-bottom simptip-movable" data-tooltip="game"><a href="movie.html"> </a></span></li> -->
+			 </ul>
+			</div>
+			<div class="col-sm-3 header_right">
+			   <ul class="header_right_box">
+				 <li><img src="images/p1.png" id="log_img" alt=""/></li>
+				 <li><p><a href="login.html" id="log_name">Unnamed</a></p></li>
+				 <li class="last"><a href="#" id="exit"><i class="edit"></i></a></li>
+				 <div class="clearfix"> </div>
+			   </ul>
+			</div>
+			<div class="clearfix"> </div>
+	      </div>
+	      <div class="content">
+	      	<div class="col-md-12 center_f" style="height:auto">
+	      		<div class="dropdown">
+				  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+				    All Dates
+				  </button>
+				  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="date_list_ul">
+				  	<li><button class="dropdownbutton" value="All Dates" onclick="date_set(this.value)">All Dates</button></li>
+				    <li><button class="dropdownbutton" value="Дата 1" onclick="date_set(this.value)">Дата 1</button></li>
+				    <li><button class="dropdownbutton" value="Дата 2" onclick="date_set(this.value)">Дата 2</button></li>
+				    <li><button class="dropdownbutton" value="Дата 3" onclick="date_set(this.value)">Дата 3</button></li>
+				  </ul>
+				</div>
+				<div class="dropdown">
+				  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+				    All Genres
+				  </button>
+				  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2" id="genre_list_ul">
+				  	<li><button class="dropdownbutton" value="All Genres" onclick="genre_set(this.value)">All Genres</button></li>
+				    <li><button class="dropdownbutton" value="Жанр 1" onclick="genre_set(this.value)">Жанр 1</button></li>
+				    <li><button class="dropdownbutton" value="Жанр 2" onclick="genre_set(this.value)">Жанр 2</button></li>
+				    <li><button class="dropdownbutton" value="Жанр 3" onclick="genre_set(this.value)">Жанр 3</button></li>
+				  </ul>
+				</div>
+				<div class="clearfix"> </div>
+	   	   			<h2 class="m_3">Now in the Movie</h2>
+	   	   		<div class="clearfix"> </div>
+	   	   	</div>
+  	       <div class="movie_top">
+  	         <div class="col-md-12 movie_box" id="cnt">
+                <!-- Movie variant with time -->
+             </div>
+             <div class="clearfix"> </div>
+           </div>
+	     </div>
+</div>
+</div>
+<!-- Modal -->
+<!-- Vertically centered scrollable modal -->
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" id="modal-cont">
+        <h5 class="modal-title" id="myModalLabel">New message</h5>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container"> 
+ <footer id="footer">
+ 	<div id="footer-3d">
+		<div class="gp-container">
+			<span class="first-widget-bend"></span>
+		</div>		
+	</div>
+    <div id="footer-widgets" class="gp-footer-larger-first-col">
+		<div class="gp-container">
+            <div class="footer-widget footer-1">
+            	<div class="wpb_wrapper">
+					<img src="images/Logo1.png" width="200" style="display: block; margin: auto; margin-bottom: -15px; margin-top: -30px;" alt=""/>
+				</div> 
+	          <br>
+	          <p>It is a long established fact that a reader will be distracted by the readable content of a page.</p>
+			  <p class="text">There are many variations of passages of Lorem Ipsum available, but the majority have suffered.</p>
+			 </div>
+			 <div class="footer_box">
+			  <div class="col_1_of_3 span_1_of_3">
+					<h3>Categories</h3>
+					<ul class="first">
+						<li><a href="http://web/movie.html?date=All%20Dates&genre=%D0%9A%D0%BE%D0%BC%D0%B5%D0%B4%D1%96%D1%8F">Комедія</a></li>
+						<li><a href="http://web/movie.html?date=All%20Dates&genre=%D0%A4%D0%B0%D0%BD%D1%82%D0%B0%D1%81%D1%82%D0%B8%D0%BA%D0%B0">Фантастика</a></li>
+						<li><a href="#">Жахи</a></li>
+					</ul>
+		     </div>
+		     <div class="col_1_of_3 span_1_of_3">
+					<ul class="first">
+						<li><a href="#">Аніме</a></li>
+						<li><a href="http://web/movie.html?date=All%20Dates&genre=%D0%91%D0%BE%D0%B9%D0%BE%D0%B2%D0%B8%D0%BA">Бойовик</a></li>
+						<li><a href="http://web/movie.html?date=All%20Dates&genre=%D0%94%D0%B5%D1%82%D0%B5%D0%BA%D1%82%D0%B8%D0%B2">Детектив</a></li>
+						<li><a href="#">Містика</a></li>
+						<li><a href="http://web/movie.html?date=All%20Dates&genre=%D0%9C%D0%B5%D0%BB%D0%BE%D0%B4%D1%80%D0%B0%D0%BC%D0%B0">Мелодрама</a></li>
+					</ul>
+		     </div>
+		     <div class="col_1_of_3 span_1_of_3">
+					<h3>Follow Us</h3>
+					<ul class="first">
+						<li><a href="#">Facebook</a></li>
+						<li><a href="#">Twitter</a></li>
+						<li><a href="#">Youtube</a></li>
+					</ul>
+					<div class="copy">
+				      <p>&copy; 2021 Template by <a href="index.html" target="_blank"> Cinema Classic</a></p>
+			        </div>
+		     </div>
+		    <div class="clearfix"> </div>
+	        </div>
+	        <div class="clearfix"> </div>
+		</div>
+	</div>
+  </footer>
+</div>
+<script type="text/javascript" src="js/session.js"></script>
+<script type="text/javascript">
+	$('#myModal').on('show.bs.modal', function (event) {
+	  var button = $(event.relatedTarget);
+	  var film = button.data('bs-name');
+	  var film_id = button.data('bs-id');
+	  var modal = $(this);
+
+	  var url = window.location;
+	  var date = decodeURIComponent(String(url).substring(String(url).indexOf('&genre='), String(url).indexOf('?date=')+6));
+
+	  $.ajax({
+                type: "POST",
+                url: "sessionlisting.php",
+                data: { data1: date, data2: film_id },
+               	success: function(response){ // запустится после получения результатов
+               		var mas = jQuery.parseJSON(response);
+           			console.log("Finish :\n", mas);
+
+           			var main = document.getElementById("modal-cont");
+           			main.innerHTML = "";
+           			var str = '<div class="modal-header" id="modal-cont"><h5 class="modal-title" id="myModalLabel">Film - ' + film + ' (' + date + ')</h5></div>';
+           			var count = 1;
+           			var cinemaName = "";
+           			var sizeroom = "";
+           			mas.forEach(v => {
+           				if(cinemaName != "" && cinemaName != v.Cinema_Name)
+           					str += '</div>';
+           				if(cinemaName == "" || cinemaName != v.Cinema_Name)
+           				{
+					  		str += '<div class="row"><div class="ms-auto center_f" style="height:auto"> <label id="Cinema-name' + count + '" class="col-form-label">' + v.Cinema_Name + ': </label></div>';
+					  		cinemaName = v.Cinema_Name;
+           				}
+           				if(v.Size_rooms == 'S')
+           					sizeroom = 'Малий зал';
+           				else if(v.Size_rooms == 'M')
+           					sizeroom = 'Середній зал';
+           				else if(v.Size_rooms == 'B')
+           					sizeroom = 'Великий зал';
+
+str += '<div class="col-sm-3 modal-body"><div class="row"><div class="col-sm-12 ms-auto center_f" style="height:auto"><label id="Date-ticket ' + count + '" class="col-form-label">' + v.Date + '</label></div>';
+str += '<div class="col-sm-12 ms-auto center_f" style="height:auto"><label id="Rooms-size ' + count + '" class="col-form-label">' + sizeroom + '</label></div>';
+str += '<div class="col-sm-12 ms-auto center_f" style="height:auto"><label id="Rooms-name ' + count + '" class="col-form-label">' + v.Name_rooms + '</label></div>';
+str += '<div class="col-sm-12 ms-auto center_f" style="height:auto"><label id="Cost-ticket ' + count + '" class="col-form-label">Цена: ' + v.Cost + ' грн</label></div></div>';
+str += '<div class="modal-footer"><div class="ms-auto center_f" style="height:auto"><button type="button" id="Time-ticket ' + count + '" class="btn btn-secondary">' + v.Time + '</button></div></div></div>';
+					count++;
+					});
+      				main.innerHTML += str;
+
+              	},
+              	error: function(e) { console.log("ERROR :\n", e);  }
+            });
+	})
+</script>
+</body>
+</html>
